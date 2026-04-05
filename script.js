@@ -2,11 +2,44 @@ const todoContainer=document.querySelector("#todos")
 const input=document.querySelector("#todos-input")
 const form=document.querySelector("form")
 
+let todosArr=JSON.parse(localStorage.getItem('todosDB')) ?? [] 
+//ca todo precedente sa fie salvate, sa nu fie rescrise dupa refresh
+
+loadInitialData(todosArr) 
+//ca sa fie afisate pe ecran toate todos
+//chiar si dupa ce se face refresh
+
+function loadInitialData(arr){
+    for(const todo of arr){
+
+        const todoDiv=document.createElement('div')
+        todoDiv.classList.add("todo-item")
+        todoDiv.setAttribute("id", todo.id)
+        
+        const textDiv=document.createElement('p')
+        textDiv.innerText=todo.todoText //acesam din arr -> todoText: textDiv.innerText
+        
+        const editButton=document.createElement('button')
+        editButton.innerText="Edit"
+        editButton.setAttribute("id","edit-button")
+
+        const deleteButton=document.createElement('button')
+        deleteButton.innerText="Delete"
+        deleteButton.setAttribute("id","delete-button")
+
+        todoDiv.appendChild(textDiv)
+        todoDiv.appendChild(editButton)
+        todoDiv.appendChild(deleteButton)
+        todoContainer.appendChild(todoDiv)
+    }
+}
+
 form.addEventListener("submit",(e)=>{
     e.preventDefault()
     
     const todoDiv=document.createElement('div')
-    
+    todoDiv.setAttribute("id", Date.now()) //generam id unic pentru fiecare input
+
     const textDiv=document.createElement('p')
     textDiv.innerText=input.value
     
@@ -23,6 +56,13 @@ form.addEventListener("submit",(e)=>{
     todoDiv.appendChild(deleteButton)
     todoContainer.appendChild(todoDiv)
 
+    todosArr.push({
+        id: todoDiv.getAttribute("id"),
+        todoText: textDiv.innerText
+    }) //formam array din id si todo input
+
+    localStorage.setItem("todosDB",JSON.stringify(todosArr))
+
     form.reset() 
 })
 
@@ -30,6 +70,12 @@ todoContainer.addEventListener("click",(e)=>{
 
     if(e.target.getAttribute("id")==="delete-button"){
         todoContainer.removeChild(e.target.parentNode)
+
+        const todoId=e.target.parentNode.getAttribute("id")
+        todosArr = todosArr.filter(todo => todo.id != todoId) //ca sa fie comparat continutul nu tipurile de date
+        localStorage.setItem('todosDB', JSON.stringify(todosArr))
+        // ca sa fie sters si din localStorage
+
     }else if(e.target.getAttribute("id")==="edit-button"){
         editTodo(e)
     }else if(e.target.getAttribute("id")==="save-button"){
@@ -91,6 +137,13 @@ function saveTodo(event){
     parent.prepend(textDiv)
     parent.appendChild(editButton)
     parent.appendChild(deleteButton)
+
+    const todoId=parent.getAttribute("id")
+
+    const todoObj = todosArr.find(todo => todo.id == todoId) 
+    todoObj.todoText = textDiv.innerText
+    localStorage.setItem('todosDB', JSON.stringify(todosArr))
+    // ca modificarile sa fie facut si in localStorage
 }
 
 function cancelTodo(event){
