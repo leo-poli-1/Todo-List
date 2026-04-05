@@ -34,6 +34,8 @@ todoContainer.addEventListener("click",(e)=>{
         editTodo(e)
     }else if(e.target.getAttribute("id")==="save-button"){
         saveTodo(e)
+    }else if(e.target.getAttribute("id")==="cancel-button"){
+        cancelTodo(e)
     }
 })
 
@@ -51,12 +53,17 @@ function editTodo(event){
     saveButton.innerText="Save"
     saveButton.setAttribute("id","save-button")
 
+    const cancelButton=document.createElement('button')
+    cancelButton.innerText="Cancel"
+    cancelButton.setAttribute("id","cancel-button")
+
     parent.removeChild(textDiv)
     parent.removeChild(deleteButton)
     parent.removeChild(editButton)
 
     parent.prepend(editInput)
     parent.appendChild(saveButton)
+    parent.appendChild(cancelButton)
 }
 
 function saveTodo(event){
@@ -64,6 +71,7 @@ function saveTodo(event){
     const children = parent.children
     const editInput = children[0]
     const saveButton = children[1]
+    const cancelButton = children[2] 
 
     const editButton=document.createElement('button')
     editButton.innerText="Edit"
@@ -78,6 +86,34 @@ function saveTodo(event){
 
     parent.removeChild(editInput)
     parent.removeChild(saveButton)
+    parent.removeChild(cancelButton)
+
+    parent.prepend(textDiv)
+    parent.appendChild(editButton)
+    parent.appendChild(deleteButton)
+}
+
+function cancelTodo(event){
+    const parent= event.target.parentNode 
+    const children = parent.children
+    const editInput= children[0] ///am obtinut <input>
+    const saveButton = children[1]
+    const cancelButton = children[2] 
+
+    const textDiv=document.createElement("p")
+    textDiv.innerText=editInput.value
+
+    const editButton=document.createElement('button')
+    editButton.innerText="Edit"
+    editButton.setAttribute("id", "edit-button")   
+
+    const deleteButton=document.createElement('button')
+    deleteButton.innerText="Delete"
+    deleteButton.setAttribute("id", "delete-button")
+
+    parent.removeChild(editInput)
+    parent.removeChild(saveButton)
+    parent.removeChild(cancelButton)
 
     parent.prepend(textDiv)
     parent.appendChild(editButton)
